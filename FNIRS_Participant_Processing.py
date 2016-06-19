@@ -61,7 +61,7 @@ with open(outputFileName + '.csv', 'wb') as output:
 	        			break
 
 	        #Get +5sec and -10sec rows
-	        plus5Total, plus5Count, minus10Total, minus10Count = ([] for x in range(4))
+	        plus5Total, plus5Results, plus5Count, minus10Total, minus10Count = ([] for x in range(5))
 	        for i in range(intervalsLen):
 	        	participantCSVFile.seek(0)
 	        	reader.next()
@@ -69,7 +69,11 @@ with open(outputFileName + '.csv', 'wb') as output:
 	        	plus5row =  [float(0) for x in range(len(fileHeaders))]
 	        	minus10row = [float(0) for x in range(len(fileHeaders))]
 	        	rowCount5sec, rowCount10sec = 0,0
+	        	found = False
 	        	for row in reader:
+	        		if float(row[0]) >= plus5intervals[i] and not found:
+	        			plus5Results.append(row)
+	        			found=True
 	        		if float(row[0]) >= intervals[i] and float(row[0]) <= plus5intervals[i]:
 	        			rowCount5sec += 1
 	        			plus5row = [sum(x) for x in zip(plus5row, [float(y) for y in row])]
@@ -92,6 +96,13 @@ with open(outputFileName + '.csv', 'wb') as output:
 	    outwriter.writerow(['Actual Values'])
 	    outwriter.writerow(fileHeaders)
 	    for row in actualValues:
+	    	outwriter.writerow(row)
+
+	    outwriter.writerow([])
+	    outwriter.writerow([])
+	    outwriter.writerow(['5 Second Values'])
+	    outwriter.writerow(fileHeaders)
+	    for row in plus5Results:
 	    	outwriter.writerow(row)
 
 	    outwriter.writerow([])
